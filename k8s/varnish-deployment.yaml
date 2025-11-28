@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: varnish
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: varnish
+  template:
+    metadata:
+      labels:
+        app: varnish
+    spec:
+      containers:
+      - name: varnish
+        image: varnish:7.4
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config
+          mountPath: /etc/varnish/default.vcl
+          subPath: default.vcl
+      volumes:
+      - name: config
+        configMap:
+          name: varnish-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: varnish
+spec:
+  selector:
+    app: varnish
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
