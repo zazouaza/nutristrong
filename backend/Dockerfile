@@ -1,14 +1,13 @@
-# Use Node.js LTS (Long Term Support) Alpine version for small footprint
-FROM node:20-alpine
+# Stage 1: Build
+FROM node:20-alpine as builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first to leverage Docker cache
+# Copy package files
 COPY package*.json ./
 
-# Install production dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies like typescript)
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -16,7 +15,21 @@ COPY . .
 # Build TypeScript code
 RUN npm run build
 
-# Expose the port the app runs on
+# Stage 2: Run
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ONLY production dependencies
+RUN npm ci --only=production
+
+# Copy built artifacts from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Expose the port
 EXPOSE 3001
 
 # Command to run the application
