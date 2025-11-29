@@ -33,8 +33,9 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-    # Use npm install instead of npm ci to handle cross-platform optional dependencies (like Rollup for Linux)
-    # because the package-lock.json was likely generated on Windows.
+    # Delete package-lock.json to avoid platform-specific lockfile issues (missing Linux binaries)
+    # This forces a fresh resolution of dependencies for the Linux CI environment.
+    - run: rm package-lock.json
     - run: npm install
     - run: npm run build
     # - run: npm test # Uncomment when tests are added
