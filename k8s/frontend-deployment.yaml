@@ -15,7 +15,7 @@ spec:
       containers:
       - name: frontend
         image: nutristrong-frontend:latest
-        imagePullPolicy: Never # Use local image for Minikube
+        imagePullPolicy: Never # Use local image for MinikubexxDDDDtest
         ports:
         - containerPort: 80
 ---
